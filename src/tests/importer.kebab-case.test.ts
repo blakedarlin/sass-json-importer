@@ -20,10 +20,10 @@ describe('toKebabCase - Convert keys to kebab case', () => {
 		});
 
 		const result = await compiler.compileStringAsync(
-			`@import "strings.json"; body { color: $color-green; }`,
+			`@use "strings.json"; body { color: strings.$color-green; }`,
 			{ importers: [jsonImporter] },
 		);
-		expect(result.css.toString()).toContain('color: #3c3;');
+		expect(result.css).toContain('color: #3c3;');
 	});
 
 	it('converts map keys to kebab case when convertCase is true', async () => {
@@ -33,10 +33,10 @@ describe('toKebabCase - Convert keys to kebab case', () => {
 		});
 
 		const result = await compiler.compileStringAsync(
-			`@use 'sass:map'; @import "maps.json"; body { color:  map.get($colors, light-blue); }`,
+			`@use 'sass:map'; @use "maps.json"; body { color:  map.get(maps.$colors, light-blue); }`,
 			{ importers: [jsonImporter] },
 		);
-		expect(result.css.toString()).toContain('color: #acf;');
+		expect(result.css).toContain('color: #acf;');
 	});
 
 	it('imports unmodified variables when convertCase is false', async () => {
@@ -46,10 +46,10 @@ describe('toKebabCase - Convert keys to kebab case', () => {
 		});
 
 		const result = await compiler.compileStringAsync(
-			`@import "strings.json"; body { color: $colorGreen; }`,
+			`@use "strings.json"; body { color: strings.$colorGreen; }`,
 			{ importers: [jsonImporter] },
 		);
-		expect(result.css.toString()).toContain('color: #3c3;');
+		expect(result.css).toContain('color: #3c3;');
 	});
 
 	it('imports unmodified variables when convertCase is not set', async () => {
@@ -58,9 +58,9 @@ describe('toKebabCase - Convert keys to kebab case', () => {
 		});
 
 		const result = await compiler.compileStringAsync(
-			`@import "strings.json"; body { color: $colorGreen; }`,
+			`@use "strings.json"; body { color: strings.$colorGreen; }`,
 			{ importers: [jsonImporter] },
 		);
-		expect(result.css.toString()).toContain('color: #3c3;');
+		expect(result.css).toContain('color: #3c3;');
 	});
 });

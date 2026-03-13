@@ -29,7 +29,7 @@ describe('loadJsonFromPath - error on invalid JSON content', () => {
 
 		try {
 			await compiler.compileStringAsync(
-				'@import "invalid-json-no-closing-brace.json"',
+				'@use "invalid-json-no-closing-brace.json"',
 				sassOptions,
 			);
 		} catch (error) {
@@ -46,7 +46,7 @@ describe('loadJsonFromPath - error on invalid JSON content', () => {
 
 		try {
 			await compiler.compileStringAsync(
-				'@import "invalid-json-unquoted-key.json"',
+				'@use "invalid-json-unquoted-key.json"',
 				sassOptions,
 			);
 		} catch (error) {

@@ -1,11 +1,12 @@
 import eslint from '@eslint/js';
+import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 import jestPlugin from 'eslint-plugin-jest';
 import unicornPlugin from 'eslint-plugin-unicorn';
 import prettierConfig from 'eslint-config-prettier';
 import globals from 'globals';
 
-export default tseslint.config(
+export default defineConfig(
 	{
 		ignores: [
 			'**/node_modules/**',
@@ -25,7 +26,7 @@ export default tseslint.config(
 	eslint.configs.recommended,
 
 	// More than 100 powerful ESLint rules
-	unicornPlugin.configs['flat/recommended'],
+	unicornPlugin.configs['recommended'],
 
 	// strict: a superset of recommended that includes more opinionated rules which may also catch bugs.
 	...tseslint.configs.strictTypeChecked,
@@ -47,11 +48,11 @@ export default tseslint.config(
 	// ESLint plugin for Jest
 	{
 		files: ['**/*.test.ts'],
-		...jestPlugin.configs['flat/recommended'],
+		extends: [jestPlugin.configs['flat/recommended']],
 	},
 	// Turn off type-aware linting on specific subsets of files
 	{
 		files: ['**/*.js'],
-		...tseslint.configs.disableTypeChecked,
+		extends: [tseslint.configs.disableTypeChecked],
 	},
 );

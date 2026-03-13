@@ -1,5 +1,5 @@
-@import 'non-json-variables';
+@use 'non-json-variables';
 
 body {
-  color: $color-red;
+  color: non-json-variables.$color-red;
 }

@@ -119,7 +119,9 @@ export default class JsonImporter implements Importer {
 	// WordPress theme.json uses colon in key names (':hover', ':focus', etc.), we need to allow for it.
 	protected isValidKey = (key: string): boolean => /^:?[^$:@]*$/.test(key);
 
-	protected isPlainObject = (value: JsonObject | JsonValue): boolean =>
+	protected isPlainObject = (
+		value: JsonObject | JsonValue,
+	): value is JsonObject =>
 		value !== null && typeof value === 'object' && !Array.isArray(value);
 
 	protected toKebabCase(key: string): string {
@@ -173,7 +175,7 @@ export default class JsonImporter implements Importer {
 
 	protected parseMap(jsonContent: JsonObject) {
 		return `(${this.processKeys(jsonContent, (key, value) => {
-			let mapKey = this.options.stringifyKeys ? `"${key}"` : key;
+			const mapKey = this.options.stringifyKeys ? `"${key}"` : key;
 
 			return `${mapKey}: ${this.parseValue(value)}`;
 		}).join(',')})`;
@@ -187,7 +189,7 @@ export default class JsonImporter implements Importer {
 		if (Array.isArray(value)) {
 			return this.parseList(value);
 		} else if (this.isPlainObject(value)) {
-			return this.parseMap(value as JsonObject);
+			return this.parseMap(value);
 		}
 
 		// Convert numbers and booleans to string, and optionally resolve WordPress internal links.

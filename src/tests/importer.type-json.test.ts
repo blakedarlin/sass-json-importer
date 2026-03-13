@@ -22,77 +22,75 @@ describe('Import type test (JSON)', () => {
 
 	it('imports strings', async () => {
 		const result = await compiler.compileStringAsync(
-			`@import "strings.json"; body { color: $color-red; }`,
+			`@use "strings.json"; body { color: strings.$color-red; }`,
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain(expectedResult);
+		expect(result.css).toContain(expectedResult);
 	});
 
 	it('quotes strings with special characters', async () => {
 		const result = await compiler.compileStringAsync(
-			`@import "strings.json"; body { content: $css; }`,
+			`@use "strings.json"; body { content: strings.$css; }`,
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain(
+		expect(result.css).toContain(
 			'content: "&:hover { color: red; }"',
 		);
 	});
 
 	it('imports empty strings correctly', async () => {
 		const result = await compiler.compileStringAsync(
-			`@import "empty-string.json"; body { color: $colors; }`,
+			`@use "empty-string.json"; body { color: empty-string.$colors; }`,
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain('color: ""');
+		expect(result.css).toContain('color: ""');
 	});
 
 	it('imports null as empty string', async () => {
 		const result = await compiler.compileStringAsync(
-			`@import "empty-string.json"; body { color: $nullvalue; }`,
+			`@use "empty-string.json"; body { color: empty-string.$nullvalue; }`,
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain('color: ""');
+		expect(result.css).toContain('color: ""');
 	});
 
 	it('imports lists', async () => {
 		const result = await compiler.compileStringAsync(
-			`@use 'sass:list'; @import "lists.json"; body { color: list.nth($colors, 1); }`,
+			`@use 'sass:list'; @use "lists.json"; body { color: list.nth(lists.$colors, 1); }`,
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain(expectedResult);
+		expect(result.css).toContain(expectedResult);
 	});
 
 	it('imports maps', async () => {
 		const result = await compiler.compileStringAsync(
-			`@use 'sass:map'; @import "maps.json"; body { color: map.get($colors, red); }`,
+			`@use 'sass:map'; @use "maps.json"; body { color: map.get(maps.$colors, red); }`,
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain(expectedResult);
+		expect(result.css).toContain(expectedResult);
 	});
 
 	it('with stringifyKeys: true, imports maps with quoted keys', async () => {
-		let jsonImporter = new JsonImporter({
+		const jsonImporter = new JsonImporter({
 			loadPaths: ['./src/tests/fixtures'],
 			stringifyKeys: true,
 		});
 
-		let options = {
-			importers: [jsonImporter],
-		};
+		const options = { importers: [jsonImporter] };
 
 		const result = await compiler.compileStringAsync(
-			`@use 'sass:map'; @import "maps.json"; body { color: map.get($colors, "red"); }`,
+			`@use 'sass:map'; @use "maps.json"; body { color: map.get(maps.$colors, "red"); }`,
 			options,
 		);
 
-		expect(result.css.toString()).toContain(expectedResult);
+		expect(result.css).toContain(expectedResult);
 	});
 
 	it('imports maps with array as top level', async () => {
 		const result = await compiler.compileStringAsync(
-			`@use 'sass:list'; @import "array.json"; body { color: list.nth($array, 1); }`,
+			`@use 'sass:list'; @use "array.json"; body { color: list.nth(array.$array, 1); }`,
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain(expectedResult);
+		expect(result.css).toContain(expectedResult);
 	});
 });

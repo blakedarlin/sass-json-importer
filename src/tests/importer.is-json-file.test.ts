@@ -57,6 +57,6 @@ describe('isJsonFile - checks if a file path has a valid JSON extension', () => 
 			sassOptions,
 		);
 
-		expect(result.css.toString()).toContain('color: #c33;');
+		expect(result.css).toContain('color: #c33;');
 	});
 });

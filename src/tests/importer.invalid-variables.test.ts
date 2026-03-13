@@ -20,33 +20,33 @@ describe('Skip importing invalid variables (JSON)', () => {
 
 	it('ignores variables starting with @ or $', async () => {
 		const result = await compiler.compileStringAsync(
-			`@import "invalid-variables.json"; body { color: $colors; }`,
+			`@use "invalid-variables.json"; body { color: invalid-variables.$colors; }`,
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain('color: "";');
+		expect(result.css).toContain('color: "";');
 	});
 
 	it('strips leading : from variables starting with :', async () => {
 		const result = await compiler.compileStringAsync(
-			`@import "invalid-variables.json"; body { color: $hover; }`,
+			`@use "invalid-variables.json"; body { color: invalid-variables.$hover; }`,
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain('color: #33c;');
+		expect(result.css).toContain('color: #33c;');
 	});
 
 	it('strips leading : from nested map keys starting with :', async () => {
 		const result = await compiler.compileStringAsync(
-			`@use 'sass:map'; @import "invalid-variables.json"; body { color: map.get($nested, disabled); }`,
+			`@use 'sass:map'; @use "invalid-variables.json"; body { color: map.get(invalid-variables.$nested, disabled); }`,
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain('color: #3c3;');
+		expect(result.css).toContain('color: #3c3;');
 	});
 
 	it('filters out `#` as variable value', async () => {
 		const result = await compiler.compileStringAsync(
-			`@import "invalid-variables.json"; body { color: $colors; }`,
+			`@use "invalid-variables.json"; body { color: invalid-variables.$colors; }`,
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain('color: "";');
+		expect(result.css).toContain('color: "";');
 	});
 });

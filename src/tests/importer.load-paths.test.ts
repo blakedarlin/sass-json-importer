@@ -13,7 +13,7 @@ describe('ImporterOptions - loadPaths', () => {
 			'./src/tests/fixtures/strings.scss',
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain('color: #c33;');
+		expect(result.css).toContain('color: #c33;');
 	});
 
 	it('imports JSON when passed a single, resolvable path', () => {
@@ -22,10 +22,10 @@ describe('ImporterOptions - loadPaths', () => {
 		});
 		const sassOptions = { importers: [jsonImporter] };
 		const result = compileString(
-			'@import "strings.json"; body { color: $color-red; }',
+			'@use "strings.json"; body { color: strings.$color-red; }',
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain('color: #c33;');
+		expect(result.css).toContain('color: #c33;');
 	});
 
 	it('imports JSONC when passed a single, resolvable path', () => {
@@ -34,11 +34,11 @@ describe('ImporterOptions - loadPaths', () => {
 		});
 		const sassOptions = { importers: [jsonImporter] };
 		const result = compileString(
-			'@import "strings.jsonc"; body { color: $color-red; }',
+			'@use "strings.jsonc"; body { color: strings.$color-red; }',
 			sassOptions,
 		);
 
-		expect(result.css.toString()).toContain('color: #c33;');
+		expect(result.css).toContain('color: #c33;');
 	});
 
 	it('imports JSON when passed resolvable and non-resolvable paths', () => {
@@ -47,35 +47,31 @@ describe('ImporterOptions - loadPaths', () => {
 		});
 		const sassOptions = { importers: [jsonImporter] };
 		const result = compileString(
-			'@import "strings.json"; body { color: $color-red; }',
+			'@use "strings.json"; body { color: strings.$color-red; }',
 			sassOptions,
 		);
-		expect(result.css.toString()).toContain('color: #c33;');
+		expect(result.css).toContain('color: #c33;');
 	});
 
 	it('imports JSON when passed an empty string and import path is resolvable', () => {
-		const jsonImporter = new JsonImporter({
-			loadPaths: [''],
-		});
+		const jsonImporter = new JsonImporter({ loadPaths: [''] });
 		const sassOptions = { importers: [jsonImporter] };
 		const result = compileString(
-			'@import "src/tests/fixtures/strings.json"; body { color: $color-red; }',
+			'@use "src/tests/fixtures/strings.json"; body { color: strings.$color-red; }',
 			sassOptions,
 		);
 
-		expect(result.css.toString()).toContain('color: #c33;');
+		expect(result.css).toContain('color: #c33;');
 	});
 
 	it('throws an error when passed a non-resolvable path', () => {
-		const jsonImporter = new JsonImporter({
-			loadPaths: ['./foo'],
-		});
+		const jsonImporter = new JsonImporter({ loadPaths: ['./foo'] });
 		const sassOptions = { importers: [jsonImporter] };
 
 		let caughtError: unknown;
 
 		try {
-			compileString('@import "strings.json"', sassOptions);
+			compileString('@use "strings.json"', sassOptions);
 		} catch (error) {
 			caughtError = error;
 		}
@@ -96,10 +92,10 @@ describe('ImporterOptions - loadPaths', () => {
 		});
 		const sassOptions = { importers: [jsonImporter] };
 		const result = compileString(
-			'@import "strings.json"; body { color: $color-red; }',
+			'@use "strings.json"; body { color: strings.$color-red; }',
 			sassOptions,
 		);
 
-		expect(result.css.toString()).toContain('color: #c33;');
+		expect(result.css).toContain('color: #c33;');
 	});
 });

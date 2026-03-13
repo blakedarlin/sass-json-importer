@@ -1,5 +1,5 @@
-@import 'not-a-json-file';
+@use 'not-a-json-file';
 
 body {
-  color: $color-red;
+  color: not-a-json-file.$color-red;
 }
