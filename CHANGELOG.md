@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3
+
+- Update packages.
+
 ## 1.2.2
 
 - Update packages.
