@@ -1,8 +1,3 @@
-import { pathsToModuleNameMapper } from 'ts-jest';
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
-const { compilerOptions } = require('./tsconfig.json');
-
 /** @type {import('jest').Config} */
 const config = {
 	verbose: true,
@@ -10,9 +5,6 @@ const config = {
 	testEnvironment: 'node',
 	extensionsToTreatAsEsm: ['.ts'],
 	moduleNameMapper: {
-		...pathsToModuleNameMapper(compilerOptions.paths, {
-			prefix: '<rootDir>/',
-		}),
 		'^(\\.{1,2}/.*)\\.js$': '$1',
 	},
 	transform: {
