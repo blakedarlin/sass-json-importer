@@ -1,6 +1,6 @@
 {
 	"name": "@blakedarlin/sass-json-importer",
-	"version": "1.2.4",
+	"version": "1.2.5",
 	"description": "Allows importing JSON in Sass files parsed by sass/sass-embedded, with added support for WordPress.",
 	"type": "module",
 	"main": "./dist/index.js",
