@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.5
+
+- Update Babel dependencies to 7.29.7 and other lockfile packages to address security and compatibility issues.
+- Update ESLint, TypeScript, Jest, and other development dependencies.
+- Refactor ESLint configuration to use `globalIgnores`.
+- Streamline Jest configuration and adjust TypeScript `rootDir` settings.
+
+## 1.2.4
+
+- Update packages to fix vulnerabilities.
+
 ## 1.2.3
 
 - Update packages.
