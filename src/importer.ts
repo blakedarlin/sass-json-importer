@@ -37,8 +37,54 @@ export default class JsonImporter implements Importer {
 		'wss',
 	];
 
+	// isJsonFile = (url: string): boolean => /\.js(on5?)?$/.test(url);
+	isJsonFile = (url: string): boolean =>
+		url.endsWith('.json') || url.endsWith('.jsonc');
+
+	protected loadJsonFromPath = (filePath: string): JsonObject => {
+		try {
+			const fileContent = readFileSync(filePath, 'utf8');
+			const jsonContent = JSONC.parse(fileContent) as JsonObject;
+			return this.ensureObject(jsonContent, filePath);
+		} catch (error: unknown) {
+			throw new Error(
+				`Failed to read or parse JSON from file ${filePath}: ${String(error)}`,
+				{ cause: error },
+			);
+		}
+	};
+
+	// WordPress theme.json uses colon in key names (':hover', ':focus', etc.), we need to allow for it.
+	protected isValidKey = (key: string): boolean => /^:?[^$:@]*$/.test(key);
+
+	protected isPlainObject = (
+		value: JsonObject | JsonValue,
+	): value is JsonObject =>
+		value !== null && typeof value === 'object' && !Array.isArray(value);
+
+	// Empty strings must be explicitly quoted. (Sass would otherwise throw an error as the variable is set to nothing.)
+	protected maybeQuoteStrings = (value: string): string =>
+		value === '' || /[$%*+,/:@|]/.test(value) ? `'${value}'` : value;
+
 	constructor(options: ImporterOptions = {}) {
 		this.options = options;
+	}
+
+	private processKeys(
+		object: JsonObject,
+		formatter: (key: string, value: JsonObject | JsonValue) => string,
+	): string[] {
+		return Object.keys(object)
+			.filter((key) => this.isValidKey(key) && object[key] !== '#')
+			.map((key) => {
+				const convertedVariableName = this.options.convertCase
+					? this.toKebabCase(key)
+					: key;
+				return formatter(
+					convertedVariableName.replace(':', ''),
+					object[key] as JsonObject | JsonValue,
+				);
+			});
 	}
 
 	canonicalize(
@@ -58,7 +104,8 @@ export default class JsonImporter implements Importer {
 		}
 
 		// Then, add items from this.options.loadPaths
-		for (const item of this.options.loadPaths ?? []) loadPaths.add(item);
+		const optionLoadPaths = this.options.loadPaths ?? [];
+		for (const item of optionLoadPaths) loadPaths.add(item);
 
 		for (const loadPath of loadPaths) {
 			try {
@@ -83,17 +130,15 @@ export default class JsonImporter implements Importer {
 				contents: contents,
 				syntax: 'scss',
 				sourceMapUrl: canonicalUrl,
-			} as ImporterResult;
+			};
 		} catch (error) {
 			const message =
 				error instanceof Error ? error.message : String(error);
-			throw new Error(`Failed to load or transform JSON: ${message}`);
+			throw new Error(`Failed to load or transform JSON: ${message}`, {
+				cause: error,
+			});
 		}
 	}
-
-	// isJsonFile = (url: string): boolean => /\.js(on5?)?$/.test(url);
-	isJsonFile = (url: string): boolean =>
-		url.endsWith('.json') || url.endsWith('.jsonc');
 
 	protected ensureObject(
 		jsonContent: JsonObject,
@@ -104,53 +149,12 @@ export default class JsonImporter implements Importer {
 			: jsonContent;
 	}
 
-	protected loadJsonFromPath = (filePath: string): JsonObject => {
-		try {
-			const fileContent = readFileSync(filePath, 'utf8');
-			const jsonContent = JSONC.parse(fileContent) as JsonObject;
-			return this.ensureObject(jsonContent, filePath);
-		} catch (error: unknown) {
-			throw new Error(
-				`Failed to read or parse JSON from file ${filePath}: ${String(error)}`,
-			);
-		}
-	};
-
-	// WordPress theme.json uses colon in key names (':hover', ':focus', etc.), we need to allow for it.
-	protected isValidKey = (key: string): boolean => /^:?[^$:@]*$/.test(key);
-
-	protected isPlainObject = (
-		value: JsonObject | JsonValue,
-	): value is JsonObject =>
-		value !== null && typeof value === 'object' && !Array.isArray(value);
-
 	protected toKebabCase(key: string): string {
 		return key
 			.replaceAll(/([\da-z])([A-Z])/g, '$1-$2')
 			.replaceAll(/([A-Z])([A-Z])(?=[a-z])/g, '$1-$2')
 			.toLowerCase();
 	}
-
-	private processKeys(
-		object: JsonObject,
-		formatter: (key: string, value: JsonObject | JsonValue) => string,
-	): string[] {
-		return Object.keys(object)
-			.filter((key) => this.isValidKey(key) && object[key] !== '#')
-			.map((key) => {
-				const convertedVariableName = this.options.convertCase
-					? this.toKebabCase(key)
-					: key;
-				return formatter(
-					convertedVariableName.replace(':', ''),
-					object[key] as JsonObject | JsonValue,
-				);
-			});
-	}
-
-	// Empty strings must be explicitly quoted. (Sass would otherwise throw an error as the variable is set to nothing.)
-	protected maybeQuoteStrings = (value: string): string =>
-		value === '' || /[$%*+,/:@|]/.test(value) ? `'${value}'` : value;
 
 	// Since WordPress 6.3.0, WP_Theme_JSON::resolve_variables resolves the internal link format to the CSS custom property.
 	// E.g., "var:preset|color|secondary" -> "var(--wp--preset--color--secondary)". This likewise converts those types of values.
@@ -188,7 +192,8 @@ export default class JsonImporter implements Importer {
 	protected parseValue(value: JsonObject | JsonValue): string {
 		if (Array.isArray(value)) {
 			return this.parseList(value);
-		} else if (this.isPlainObject(value)) {
+		}
+		if (this.isPlainObject(value)) {
 			return this.parseMap(value);
 		}
 

@@ -85,7 +85,7 @@ describe('ImporterOptions - loadPaths', () => {
 	it('skips paths with invalid characters, without throwing an error', () => {
 		const jsonImporter = new JsonImporter({
 			loadPaths: [
-				'./src/tests/fixtures\u0000',
+				'./src/tests/fixtures\u{0}',
 				'./src/tests/fixtures:',
 				'./src/tests/fixtures',
 			],

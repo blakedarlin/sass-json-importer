@@ -7,11 +7,11 @@ import {
 import { URL } from 'node:url';
 import { jest } from '@jest/globals';
 
-let compiler: AsyncCompiler;
-let jsonImporter: JsonImporter;
-let sassOptions: object;
-
 describe('loadJsonFromPath - error on invalid JSON content', () => {
+	let compiler: AsyncCompiler;
+	let jsonImporter: JsonImporter;
+	let sassOptions: object;
+
 	beforeAll(async () => {
 		jsonImporter = new JsonImporter({
 			loadPaths: ['./src/tests/fixtures'],
@@ -60,6 +60,8 @@ describe('loadJsonFromPath - error on invalid JSON content', () => {
 });
 
 describe('loadJsonFromPath - error if JSON-to-Sass transform fails', () => {
+	let compiler: AsyncCompiler;
+	let jsonImporter: JsonImporter;
 	let mockUrl: URL;
 
 	beforeAll(async () => {
@@ -67,7 +69,6 @@ describe('loadJsonFromPath - error if JSON-to-Sass transform fails', () => {
 			loadPaths: ['./src/tests/fixtures'],
 		});
 		compiler = await initAsyncCompiler();
-		sassOptions = { importers: [jsonImporter] };
 		mockUrl = new URL('file:///mock/path/to/file.json');
 	});
 
