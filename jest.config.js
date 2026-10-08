@@ -1,7 +1,8 @@
-/** @type {import('jest').Config} */
+/**
+ * @type {import('jest').Config}
+ */
 const config = {
 	verbose: true,
-	preset: 'ts-jest/presets/default-esm',
 	testEnvironment: 'node',
 	extensionsToTreatAsEsm: ['.ts'],
 	moduleNameMapper: {
@@ -9,14 +10,16 @@ const config = {
 	},
 	transform: {
 		'^.+\\.tsx?$': [
-			'ts-jest',
+			'@swc/jest',
 			{
-				useESM: true,
-				tsconfig: './tsconfig.json',
+				jsc: {
+					parser: { syntax: 'typescript', tsx: false },
+					target: 'es2022',
+				},
+				module: { type: 'es6' },
 			},
 		],
 	},
-	resolver: 'ts-jest-resolver',
 	collectCoverage: true,
 	coverageDirectory: 'coverage',
 	coverageProvider: 'v8',
