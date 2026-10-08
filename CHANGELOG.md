@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.0
+
+- Add CommonJS `require` support via `package.json` `exports` and a `module.exports` export, so `require('@blakedarlin/sass-json-importer')` returns the factory function directly.
+- Declare `engines.node` as `>=22.12.0` (minimum for default `require()` of ESM).
+
 ## 1.2.5
 
 - Update Babel dependencies to 7.29.7 and other lockfile packages to address security and compatibility issues.

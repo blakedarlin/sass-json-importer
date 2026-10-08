@@ -2,9 +2,13 @@
 
 JSON importer for [sass-embedded](https://github.com/sass/embedded-host-node). Allows `@use`ing/`@import`ing `.json` files in Sass files parsed by `sass-embedded`, using the [Importer API](https://sass-lang.com/documentation/js-api/interfaces/importer/).
 
+Requires **Node.js 22.12 or later** (needed for `require()` of this ESM package).
+
 ## Usage
 
 ### [sass-embedded](https://github.com/sass/embedded-host-node)
+
+CommonJS:
 
 ```javascript
 const sass = require('sass-embedded');
@@ -19,6 +23,19 @@ const result = sass.compile(scssFilename, sassOptions);
 
 // Async
 const result = await sass.compileAsync(scssFilename, sassOptions);
+```
+
+ES modules:
+
+```javascript
+import * as sass from 'sass-embedded';
+import jsonImporter from '@blakedarlin/sass-json-importer';
+
+const sassOptions = {
+	importers: [jsonImporter()],
+};
+
+const result = sass.compile(scssFilename, sassOptions);
 ```
 
 ## loadPaths
